@@ -1,0 +1,238 @@
+{
+  "info": {
+    "name": "Smart Agriculture API",
+    "description": "REST API for IoT-based Smart Agriculture System with AI Predictions",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health & Documentation",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/health",
+            "header": []
+          }
+        },
+        {
+          "name": "API Documentation",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api",
+            "header": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sensor Data",
+      "item": [
+        {
+          "name": "Submit Sensor Data",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/sensors/data",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"deviceId\":\"DEVICE-001\",\"temperature\":28.5,\"humidity\":65,\"moisture\":45,\"ph\":6.8}"
+            }
+          }
+        },
+        {
+          "name": "Get Latest Sensor Data",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/sensors/latest/DEVICE-001",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Sensor History",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/sensors/history/DEVICE-001?limit=50&skip=0",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Sensor Statistics",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/sensors/statistics/DEVICE-001",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI Predictions",
+      "item": [
+        {
+          "name": "Predict Disease",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/ai/predict-disease",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "deviceId",
+                  "value": "DEVICE-001",
+                  "type": "text"
+                },
+                {
+                  "key": "temperature",
+                  "value": "28.5",
+                  "type": "text"
+                },
+                {
+                  "key": "humidity",
+                  "value": "85",
+                  "type": "text"
+                },
+                {
+                  "key": "moisture",
+                  "value": "75",
+                  "type": "text"
+                },
+                {
+                  "key": "ph",
+                  "value": "6.8",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Suggest Crop",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/ai/suggest-crop",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"deviceId\":\"DEVICE-001\",\"temperature\":25,\"humidity\":70,\"moisture\":55,\"ph\":6.5,\"location\":\"Region A\"}"
+            }
+          }
+        },
+        {
+          "name": "Get Prediction History",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/ai/predictions/DEVICE-001?limit=20",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "History & Analytics",
+      "item": [
+        {
+          "name": "Get All Predictions",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/history/predictions/DEVICE-001?limit=50",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Prediction Summary",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/history/summary/DEVICE-001?days=30",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Delete Prediction",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/v1/history/predictions/DEVICE-001/PREDICTION-ID",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "apiKey",
+      "value": "your-secret-api-key-for-esp32",
+      "type": "string"
+    }
+  ]
+}
