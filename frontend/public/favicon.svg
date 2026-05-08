@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="farmGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22c55e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16a34a;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <circle cx="50" cy="50" r="50" fill="url(#farmGradient)"/>
+  
+  <!-- Soil -->
+  <rect x="20" y="55" width="60" height="25" rx="2" fill="#8B6F47"/>
+  
+  <!-- Plant -->
+  <g>
+    <!-- Stem -->
+    <line x1="50" y1="55" x2="50" y2="30" stroke="#22c55e" stroke-width="3" stroke-linecap="round"/>
+    
+    <!-- Left Leaf -->
+    <ellipse cx="40" cy="40" rx="8" ry="12" fill="#16a34a" transform="rotate(-35 40 40)"/>
+    
+    <!-- Right Leaf -->
+    <ellipse cx="60" cy="40" rx="8" ry="12" fill="#16a34a" transform="rotate(35 60 40)"/>
+    
+    <!-- Top Leaf -->
+    <ellipse cx="50" cy="25" rx="6" ry="10" fill="#22c55e"/>
+  </g>
+  
+  <!-- Water droplets (for irrigation) -->
+  <circle cx="35" cy="65" r="2.5" fill="#3b82f6" opacity="0.7"/>
+  <circle cx="65" cy="70" r="2.5" fill="#3b82f6" opacity="0.7"/>
+</svg>
