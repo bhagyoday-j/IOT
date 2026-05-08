@@ -31,6 +31,7 @@ const schemas = {
     moisture: Joi.number().min(0).max(100).required(),
     ph: Joi.number().min(0).max(14).required(),
     location: Joi.string().trim().optional(),
+    deviceId: Joi.string().trim().required(),
   }),
 
   queryDateRange: Joi.object({

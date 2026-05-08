@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Leaf, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { suggestCrop } from '../../services/api';
+import { suggestCrop, deviceId } from '../../services/api';
 import { useStore } from '../../store/useStore';
 
 interface CropSuggestion {
@@ -46,6 +46,7 @@ export default function CropRecommendation() {
         moisture: parseFloat(formData.moisture),
         ph: parseFloat(formData.ph),
         location: formData.location,
+        deviceId,
       };
 
       const res = await suggestCrop(payload);
@@ -53,27 +54,8 @@ export default function CropRecommendation() {
       toast.success('Crop recommendations generated');
     } catch (error) {
       console.error('Failed to get crop suggestions:', error);
-
-      // Mock results for demo
-      const mockResults = [
-        {
-          crop: 'Rice',
-          suitability: 92,
-          reason: 'Optimal conditions for rice cultivation. High moisture and temperature levels are ideal.',
-        },
-        {
-          crop: 'Wheat',
-          suitability: 78,
-          reason: 'Suitable conditions. May require additional irrigation during dry periods.',
-        },
-        {
-          crop: 'Corn',
-          suitability: 85,
-          reason: 'Good temperature and pH levels. Ensure consistent moisture for best yield.',
-        },
-      ];
-      setResults(mockResults);
-      toast.success('Crop recommendations generated (demo mode)');
+      setResults([]);
+      toast.error('Failed to generate crop recommendations from backend');
     } finally {
       setLoading(false);
     }
@@ -210,6 +192,13 @@ export default function CropRecommendation() {
                   <p className="text-sm text-gray-600 dark:text-gray-300">{crop.reason}</p>
                 </div>
               ))}
+            </div>
+          )}
+          {!loading && results.length === 0 && (
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                No crop recommendations returned by backend yet.
+              </p>
             </div>
           )}
         </div>

@@ -32,6 +32,7 @@ export const suggestCrop = (data: {
   moisture: number;
   ph: number;
   location: string;
+  deviceId: string;
 }) => api.post('/ai/suggest-crop', data);
 
 // History endpoints

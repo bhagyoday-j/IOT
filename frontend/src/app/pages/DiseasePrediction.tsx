@@ -16,6 +16,7 @@ export default function DiseasePrediction() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<PredictionResult | null>(null);
   const [sensorData, setSensorData] = useState<any>(null);
+  const [sensorLoading, setSensorLoading] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -23,17 +24,16 @@ export default function DiseasePrediction() {
   }, []);
 
   const fetchSensorData = async () => {
+    setSensorLoading(true);
     try {
       const res = await getLatestSensorData(deviceId);
       setSensorData(res.data.data);
     } catch (error) {
       console.error('Failed to fetch sensor data:', error);
-      setSensorData({
-        temperature: 28.5,
-        humidity: 65,
-        moisture: 42,
-        ph: 6.8,
-      });
+      setSensorData(null);
+      toast.error('Unable to load current sensor data from backend');
+    } finally {
+      setSensorLoading(false);
     }
   };
 
@@ -59,6 +59,10 @@ export default function DiseasePrediction() {
       toast.error('Please select an image first');
       return;
     }
+    if (!sensorData) {
+      toast.error('Live sensor data is required before prediction');
+      return;
+    }
 
     setLoading(true);
     try {
@@ -68,21 +72,15 @@ export default function DiseasePrediction() {
       formData.append('humidity', sensorData?.humidity.toString() || '0');
       formData.append('moisture', sensorData?.moisture.toString() || '0');
       formData.append('ph', sensorData?.ph.toString() || '0');
+      formData.append('deviceId', deviceId);
 
       const res = await predictDisease(formData);
       setResult(res.data.data);
       toast.success('Disease prediction completed');
     } catch (error) {
       console.error('Prediction failed:', error);
-
-      // Mock result for demo
-      const mockResult = {
-        disease: 'Leaf Blight',
-        confidence: 87.5,
-        solution: 'Apply copper-based fungicide. Remove infected leaves. Ensure proper drainage and spacing between plants. Water at the base to keep foliage dry.',
-      };
-      setResult(mockResult);
-      toast.success('Disease prediction completed (demo mode)');
+      setResult(null);
+      toast.error('Disease prediction failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -135,7 +133,9 @@ export default function DiseasePrediction() {
 
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
             <h2 className="font-semibold text-gray-900 dark:text-white mb-4">Current Sensor Data</h2>
-            {sensorData ? (
+            {sensorLoading ? (
+              <LoadingSpinner />
+            ) : sensorData ? (
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-xs text-gray-500 dark:text-gray-400">Temperature</p>
@@ -155,7 +155,9 @@ export default function DiseasePrediction() {
                 </div>
               </div>
             ) : (
-              <LoadingSpinner />
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                No live sensor data available from backend.
+              </p>
             )}
           </div>
 

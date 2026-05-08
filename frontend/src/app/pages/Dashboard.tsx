@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Thermometer, Droplet, Droplets, FlaskConical } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { toast } from 'sonner';
 import MetricCard from '../components/MetricCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { getLatestSensorData, getSensorHistory, deviceId } from '../../services/api';
@@ -25,6 +24,7 @@ interface HistoryData {
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [sensorData, setSensorData] = useState<SensorData | null>(null);
   const [historyData, setHistoryData] = useState<HistoryData[]>([]);
   const { setLatestSensorData, setDeviceOnline } = useStore();
@@ -40,29 +40,14 @@ export default function Dashboard() {
       setHistoryData(historyRes.data.data.data);
       setLatestSensorData(latestRes.data.data);
       setDeviceOnline(true);
+      setError(null);
     } catch (error) {
       console.error('Failed to fetch sensor data:', error);
       setDeviceOnline(false);
-
-      // Mock data for demo
-      const mockData = {
-        temperature: 28.5,
-        humidity: 65,
-        moisture: 42,
-        ph: 6.8,
-        timestamp: new Date().toISOString(),
-      };
-      setSensorData(mockData);
-      setLatestSensorData(mockData);
-
-      const mockHistory = Array.from({ length: 24 }, (_, i) => ({
-        timestamp: new Date(Date.now() - (23 - i) * 3600000).toISOString(),
-        temperature: 25 + Math.random() * 8,
-        humidity: 60 + Math.random() * 20,
-        moisture: 35 + Math.random() * 20,
-        ph: 6.2 + Math.random() * 1.2,
-      }));
-      setHistoryData(mockHistory);
+      setSensorData(null);
+      setHistoryData([]);
+      setLatestSensorData(null);
+      setError('Unable to load live sensor data from backend.');
     } finally {
       setLoading(false);
     }
@@ -76,6 +61,15 @@ export default function Dashboard() {
 
   if (loading) {
     return <LoadingSpinner />;
+  }
+
+  if (error) {
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Live Data Unavailable</h2>
+        <p className="text-sm text-gray-600 dark:text-gray-300">{error}</p>
+      </div>
+    );
   }
 
   const formatTime = (timestamp: string) => {
@@ -111,28 +105,28 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <MetricCard
           title="Temperature"
-          value={sensorData?.temperature.toFixed(1) || '0'}
+          value={sensorData ? sensorData.temperature.toFixed(1) : '—'}
           unit="°C"
           icon={<Thermometer className="w-6 h-6 text-green-600" />}
           trend={2.3}
         />
         <MetricCard
           title="Humidity"
-          value={sensorData?.humidity.toFixed(0) || '0'}
+          value={sensorData ? sensorData.humidity.toFixed(0) : '—'}
           unit="%"
           icon={<Droplets className="w-6 h-6 text-green-600" />}
           trend={-1.5}
         />
         <MetricCard
           title="Soil Moisture"
-          value={sensorData?.moisture.toFixed(0) || '0'}
+          value={sensorData ? sensorData.moisture.toFixed(0) : '—'}
           unit="%"
           icon={<Droplet className="w-6 h-6 text-green-600" />}
           trend={0.8}
         />
         <MetricCard
           title="pH Level"
-          value={sensorData?.ph.toFixed(1) || '0'}
+          value={sensorData ? sensorData.ph.toFixed(1) : '—'}
           unit="pH"
           icon={<FlaskConical className="w-6 h-6 text-green-600" />}
           trend={-0.2}

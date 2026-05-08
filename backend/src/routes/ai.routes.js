@@ -27,7 +27,7 @@ router.post(
 /**
  * POST /api/v1/ai/suggest-crop
  * Suggest crops based on environmental conditions
- * Body: temperature, humidity, moisture, ph, location (optional)
+ * Body: temperature, humidity, moisture, ph, deviceId, location (optional)
  */
 router.post(
   '/suggest-crop',

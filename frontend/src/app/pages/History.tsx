@@ -14,6 +14,7 @@ interface HistoryRecord {
 
 export default function History() {
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'disease' | 'crop'>('all');
   const [records, setRecords] = useState<HistoryRecord[]>([]);
 
@@ -38,51 +39,11 @@ export default function History() {
       }));
       
       setRecords(transformedRecords);
+      setError(null);
     } catch (error) {
       console.error('Failed to fetch history:', error);
-
-      // Mock data for demo
-      const mockRecords: HistoryRecord[] = [
-        {
-          id: '1',
-          type: 'disease',
-          result: 'Leaf Blight',
-          confidence: 87.5,
-          timestamp: new Date(Date.now() - 3600000).toISOString(),
-          details: 'Apply copper-based fungicide. Remove infected leaves.',
-        },
-        {
-          id: '2',
-          type: 'crop',
-          result: 'Rice, Wheat, Corn',
-          timestamp: new Date(Date.now() - 7200000).toISOString(),
-          details: 'Top 3 recommended crops based on current conditions',
-        },
-        {
-          id: '3',
-          type: 'disease',
-          result: 'Powdery Mildew',
-          confidence: 92.3,
-          timestamp: new Date(Date.now() - 86400000).toISOString(),
-          details: 'Use sulfur-based spray. Improve air circulation.',
-        },
-        {
-          id: '4',
-          type: 'crop',
-          result: 'Tomato, Potato, Cabbage',
-          timestamp: new Date(Date.now() - 172800000).toISOString(),
-          details: 'Suitable for current seasonal conditions',
-        },
-        {
-          id: '5',
-          type: 'disease',
-          result: 'Bacterial Spot',
-          confidence: 78.9,
-          timestamp: new Date(Date.now() - 259200000).toISOString(),
-          details: 'Remove affected plants. Apply copper fungicide.',
-        },
-      ];
-      setRecords(mockRecords);
+      setRecords([]);
+      setError('Unable to fetch prediction history from backend.');
     } finally {
       setLoading(false);
     }
@@ -105,6 +66,15 @@ export default function History() {
 
   if (loading) {
     return <LoadingSpinner />;
+  }
+
+  if (error) {
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">History Unavailable</h2>
+        <p className="text-sm text-gray-600 dark:text-gray-300">{error}</p>
+      </div>
+    );
   }
 
   return (
@@ -139,6 +109,11 @@ export default function History() {
         </div>
 
         <div className="overflow-x-auto">
+          {filteredRecords.length === 0 ? (
+            <div className="p-6 text-sm text-gray-600 dark:text-gray-300">
+              No prediction history available from backend.
+            </div>
+          ) : (
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
@@ -202,6 +177,7 @@ export default function History() {
               ))}
             </tbody>
           </table>
+          )}
         </div>
       </div>
     </div>
